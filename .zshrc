@@ -75,7 +75,7 @@ function set_virtualenv () {
 }
 
 # Set the full bash prompt.
-function set_bash_prompt () {
+function set_zsh_prompt () {
   # Set the PROMPT_SYMBOL variable. We do this first so we don't lose the
   # return value of the last command.
   set_prompt_symbol $?
@@ -96,4 +96,4 @@ ${PROMPT_SYMBOL} "
 }
 
 # Tell bash to execute this function just before displaying its prompt.
-PROMPT_COMMAND=set_bash_prompt
+precmd_functions+=(set_zsh_prompt)
