@@ -1,4 +1,58 @@
-# The various escape codes that we can use to color our prompt.
+export PATH=/opt/homebrew/bin:$PATH
+export LIBRARY_PATH=$LIBRARY_PATH:/usr/local/opt/openssl/lib/
+export PIP_EXTRA_INDEX_URL="https://pypi.dev-kayrros.ovh"
+
+export PYENV_ROOT="$HOME/.pyenv"
+export PATH="$PYENV_ROOT/bin:$PATH"
+export PIPENV_PYTHON="$PYENV_ROOT/shims/python"
+
+plugin=(
+  pyenv
+)
+
+eval "$(pyenv virtualenv-init -)"
+
+eval "$(pyenv init --path)"
+eval "$(pyenv init -)"
+
+
+# alias to clear terminal history
+alias cls="clear && printf '\e[3J'"
+
+# alias kubectl
+alias kc="kubectl"
+
+# alias for processing interation helper scripts
+alias process_status="PYTHONPATH="." python3 scripts/processing_interation/get_processing_status.py"
+alias post_process="PYTHONPATH="." python3 scripts/processing_interation/post_processing.py"
+alias delete_process="PYTHONPATH="." python3 scripts/processing_interation/delete_processing.py"
+alias deactivate_process="PYTHONPATH="." python3 scripts/processing_interation/update_process_status.py"
+
+# alias for flake
+alias flake="flake --max-line-length 120 --igone W504,W605,W503,E722,E741 --exclude alembic/.venv/"
+
+# alias for git commnads
+alias gs="git status"
+alias gc="git commit -m"
+alias gps="git push"
+alias gpl="git pull"
+alias ga="git add"
+
+
+# source python venv on opening new shell
+source /Users/rahuldev/Documents/PycharmProjects/peng/bin/activate 
+
+# alias to go process-engine-repos folder
+alias pe='cd /Users/rahuldev/Documents/PErepos/'
+
+# alias for juputer nptebook
+alias note='jupyter notebook'
+
+# alias for pythonpath
+alias pp='PYTHONPATH="."'
+
+
+# zsh prompt to show git branch python virtualenv k8s namespaces
 BLACK="%F{black}"
 LIGHT_BLACK="%F{black}"
 RED="%F{red}"
@@ -17,27 +71,27 @@ WHITE="%F{white}"
 LIGHT_WHITE="%F{white}"
 COLOR_NONE="%f"
 
-# determine git branch name
+
 function parse_git_branch(){
   git branch 2> /dev/null | sed -e '/^[^*]/d' -e 's/* \(.*\)/ (\1)/'
 }
 
-# determine mercurial branch name
+
 function parse_hg_branch(){
   hg branch 2> /dev/null | awk '{print " (" $1 ")"}'
 }
 
 # Determine the branch/state information for this git repository.
 function set_git_branch() {
-  # Get the name of the branch.
+  
   branch=$(parse_git_branch)
-  # if not git then maybe mercurial
+  
   if [ -z "$branch" ]
   then
     branch=$(parse_hg_branch)
   fi
 
-  # Set the final branch string.
+  
   BRANCH="%F{magenta}${branch}${COLOR_NONE} "
 }
 
@@ -55,8 +109,7 @@ function set_k8s_prompt () {
   K8S="%F{black}[%F{blue}${CONTEXT}|${NAMESPACE}%F{black}]${COLOR_NONE}"
 }
 
-# Return the prompt symbol to use, colorized based on the return value of the
-# previous command.
+
 function set_prompt_symbol () {
   if test $1 -eq 0 ; then
       PROMPT_SYMBOL="%F{green}\$%F{white}"
@@ -65,7 +118,6 @@ function set_prompt_symbol () {
   fi
 }
 
-# Determine active Python virtualenv details.
 function set_virtualenv () {
   if test -z "$VIRTUAL_ENV" ; then
       PYTHON_VIRTUALENV=""
@@ -74,26 +126,25 @@ function set_virtualenv () {
   fi
 }
 
-# Set the full bash prompt.
+
 function set_zsh_prompt () {
-  # Set the PROMPT_SYMBOL variable. We do this first so we don't lose the
-  # return value of the last command.
+  
   set_prompt_symbol $?
 
-  # Set the PYTHON_VIRTUALENV variable.
+  
   set_virtualenv
 
-  # Set the BRANCH variable.
+  
   set_git_branch
 
-  # set k8s prompt
+  
   set_k8s_prompt
 
-  # Set the bash prompt variable.
+  
   PS1="
 ${PYTHON_VIRTUALENV}${GREEN}%n@%m${COLOR_NONE}:${LIGHT_YELLOW}%~${COLOR_NONE}${BRANCH}${K8S}
 ${PROMPT_SYMBOL} "
 }
 
-# Tell bash to execute this function just before displaying its prompt.
+
 precmd_functions+=(set_zsh_prompt)
